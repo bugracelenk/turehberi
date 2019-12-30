@@ -11,13 +11,12 @@ const profile = mongoose.model("Profile", new mongoose.Schema({
     required: true,
     match: /^[a-zA-Z0-9]+([a-zA-Z0-9](_|-| )[a-zA-Z0-9])*[a-zA-Z0-9]*$/
   },
-  username: {
-    type: String,
-    required: true,
-    match: /^[a-zA-Z0-9]+([a-zA-Z0-9](_|-| )[a-zA-Z0-9])*[a-zA-Z0-9]*$/
-  },
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
+    required: true
+  },
+  profile_pic: {
+    type: String,
     required: true
   },
   gender: {
@@ -25,8 +24,9 @@ const profile = mongoose.model("Profile", new mongoose.Schema({
     enum: ["Erkek", "Kadın", "Diğer", "Belirtmek İstemiyorum"],
     default: "Belirtmek İstemiyorum"
   },
-  batch_type: {
-    type: String
+  batch: {
+    type: Number,
+    default: 0
   },
   followers: {
     type: [mongoose.Schema.Types.ObjectId],
@@ -42,11 +42,6 @@ const profile = mongoose.model("Profile", new mongoose.Schema({
     type: [mongoose.Schema.Types.ObjectId],
     ref: "Comment",
     default: []
-  },
-  user_type: {
-    type: String,
-    enum: ["normal", "editor", "admin"],
-    default: "normal"
   },
   gw_list: {
     gone_list: {
