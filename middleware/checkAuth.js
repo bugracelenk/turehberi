@@ -6,7 +6,7 @@ module.exports = (req, res, next) => {
     //Bearer askasşlgkagşkasgşsl
     const token = req.headers.authorization.split(" ")[1];
     const decoded = jwt.verify(token, "secret");
-    req.userData = decoded;
+    req.user_data = decoded;
     next();
   }catch(err) {
     console.log(err);

@@ -1,16 +1,15 @@
 const mongoose = require("mongoose");
 const { plateCodeValidate, isValidID } = require("../utils/validation");
-const { ObjectID } = require("mongodb");
 const paginate = require("../utils/paginate");
 
-const errMessage400 = err => {
+const errMessage400 = (err,res) => {
   console.log(err.message);
   return res.status(400).json({
     error: err.message
   });
 };
 
-const errMessage500 = err => {
+const errMessage500 = (err,res) => {
   console.log(err.message);
   return res.status(500).json({
     error: err.message
@@ -21,12 +20,12 @@ exports.create_place = async (req, res, next) => {
   try {
     const args = req.body;
 
-    checkPlateCode(args.plate_code);
+    plateCodeValidate(args.plate_code);
 
     let isCreated = await mongoose
       .model("Place")
       .findOne({ title: args.title });
-    if (isCreated.title === args.title) {
+    if (isCreated && isCreated.title === args.title) {
       return res.status(400).json({
         message: "Bu başlık ile daha önce bir mekan oluşturulmuş",
         request: {
@@ -34,7 +33,7 @@ exports.create_place = async (req, res, next) => {
           url: `http://${process.env.HOST}:${process.env.PORT}/api/places/${isCreated._id}`
         }
       });
-    } else if (isCreated.plate_code === args.plate_code) {
+    } else if (isCreated && isCreated.plate_code === args.plate_code) {
       return res.status(400).json({
         message: "Bu plaka kodu ile daha önce bir mekan oluşturulmuş",
         request: {
@@ -67,7 +66,7 @@ exports.create_place = async (req, res, next) => {
           "Contact with the admin, error: Something went wrong when createing new place"
       });
   } catch (err) {
-    errMessage400(err);
+    errMessage400(err, res);
   }
 };
 
@@ -80,9 +79,9 @@ exports.get_place_by_id = async (req, res, next) => {
     mongoose
       .model("Place")
       .findOne({ _id: args.place_id })
-      .populate("faved_users")
-      .populate("liked_users")
-      .populate("published_by")
+      .populate("faved_users", "-_id -gw_list -gender -followers -following -comments -liked -favs -user_id")
+      .populate("liked_users", "-_id -gw_list -gender -followers -following -comments -liked -favs -user_id")
+      .populate("published_by", "-_id -gw_list -gender -followers -following -comments -liked -favs -user_id")
       .exec()
       .then(result => {
         if (result) return res.status(200).json(result);
@@ -92,10 +91,10 @@ exports.get_place_by_id = async (req, res, next) => {
           });
       })
       .catch(err => {
-        errMessage500(err);
+        errMessage500(err, res);
       });
   } catch (err) {
-    errMessage400(err);
+    errMessage400(err, res);
   }
 };
 
@@ -110,9 +109,9 @@ exports.get_places = (req, res, next) => {
     mongoose
       .model("Place")
       .find({})
-      .populate("liked_users")
-      .populate("faved_users")
-      .populate("published_by")
+      .populate("liked_users", "-_id -gw_list -gender -followers -following -comments -liked -favs -user_id")
+      .populate("faved_users", "-_id -gw_list -gender -followers -following -comments -liked -favs -user_id")
+      .populate("published_by", "-_id -gw_list -gender -followers -following -comments -liked -favs -user_id")
       .limit(paginate.setLimit(args))
       .skip(paginate.setSkip(args))
       .sort({ plate_code: 1 })
@@ -146,10 +145,10 @@ exports.get_places = (req, res, next) => {
         else return res.status(200).json({ error: "There is no data" });
       })
       .catch(err => {
-        errMessage500(err);
+        errMessage500(err, res);
       });
   } catch (err) {
-    errMessage400(err);
+    errMessage400(err, res);
   }
 };
 
@@ -175,7 +174,7 @@ exports.update_place = (req, res, next) => {
         })
       });
   } catch (err) {
-    errMessage400(err);
+    errMessage400(err, res);
   }
 };
 
@@ -192,6 +191,6 @@ exports.delete_place = (req, res, next) => {
         })
       });
   } catch (err) {
-    errMessage400(err);
+    errMessage400(err, res);
   }
 };

@@ -1,8 +1,10 @@
 
 module.exports = (req, res, next) => {
-  if(req.userData.profile_type !== "admin") {
+  console.log(req.user_data)
+  if(req.user_data.user_type !== "admin") {
     return res.status(409).json({
-      message: "Bu işlemi yapabilmek için admin olmanız gerekiyor."
+      user_type: req.user_data.user_type,
+      message: "Bu işlemi yapabilmek için admin olmanız gerekiyor. ss"
     });
   }
   next();

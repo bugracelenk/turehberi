@@ -19,7 +19,7 @@ const place = mongoose.model("Place", new mongoose.Schema({
     default: 0
   },
   faved_users: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: [mongoose.Schema.Types.ObjectId],
     ref: "Profile",
     default: []
   },
@@ -28,7 +28,7 @@ const place = mongoose.model("Place", new mongoose.Schema({
     default: 0
   },
   liked_users: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: [mongoose.Schema.Types.ObjectId],
     ref: "Profile",
     default: []
   },

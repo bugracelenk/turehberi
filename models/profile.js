@@ -17,7 +17,7 @@ const profile = mongoose.model("Profile", new mongoose.Schema({
   },
   profile_pic: {
     type: String,
-    required: true
+    default: ""
   },
   gender: {
     type: String,

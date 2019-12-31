@@ -8,6 +8,6 @@ router.get("/:place_id",controllers.get_place_by_id);
 router.get("/",controllers.get_places);
 router.post("/create-place", check_auth ,controllers.create_place);
 router.patch("/:place_id",check_auth, isAdmin, controllers.update_place);
-router.delete("/:patch_id",check_auth, isAdmin, controllers.delete_place);
+router.delete("/:place_id",check_auth, isAdmin, controllers.delete_place);
 
 module.exports = router;

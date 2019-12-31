@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
 const speakeasy = require("speakeasy");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
 exports.login = (req, res, next) => {
   const args = req.body;
   mongoose
@@ -41,6 +44,7 @@ exports.login = (req, res, next) => {
 }
 
 exports.user_verify = async (req, res, next) => {
+  const args = req.body;
   let user = await mongoose.model("User").findOne({ _id: req.params.user_id });
   let valid = speakeasy.totp.verify({ 
     secret: "secret",
@@ -50,11 +54,14 @@ exports.user_verify = async (req, res, next) => {
   });
 
   if(valid) {
+    console.log(user.user_type)
     const token = jwt.sign(
       {
         email: user.email,
         _id: user._id,
         profile_id: user.profile_id,
+        user_type: user.user_type,
+        username: user.username
       },
       "secret",
       {
@@ -73,7 +80,7 @@ exports.user_verify = async (req, res, next) => {
   }
 }
 
-exports.register = (req, res, next) => {
+exports.register = async (req, res, next) => {
 
   const args = req.body;
 
@@ -89,7 +96,7 @@ exports.register = (req, res, next) => {
         _id: userId,
         email: args.email,
         password: hash,
-        username: args.email,
+        username: args.username,
         profile_id: profileId,
       };
 

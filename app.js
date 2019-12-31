@@ -3,8 +3,13 @@ const app = express();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
+require("./models/place");
+require("./models/profile");
+require("./models/user");
+
 const place_routes = require("./routes/places");
 const user_routes = require("./routes/users");
+const profile_routes = require("./routes/profiles");
 
 mongoose
   .connect(
@@ -33,6 +38,6 @@ app.use((req, res, next) => { //CORS İzinleri
 
 app.use("/api/users", user_routes);
 app.use("/api/places", place_routes);
-// app.use("/api/stores", storeRoute);
+app.use("/api/profiles", profile_routes);
 
 module.exports = app;

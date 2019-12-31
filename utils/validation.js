@@ -1,8 +1,7 @@
+const { ObjectID } = require("mongodb");
+
 const plateCodeValidate = plate_code => {
-  let plate_code_regex = /^[1-8]?[0-1]$/;
-  let isValid = plate_code_regex.test(plate_code);
-  if(isValid) return true;
-  else throw new Error("Unvalid plate code");
+
 }
 
 const isValidID = (_id, field) => {
