@@ -6,10 +6,13 @@ const mongoose = require("mongoose");
 require("./models/place");
 require("./models/profile");
 require("./models/user");
+require("./models/city");
+require("./models/message");
 
 const place_routes = require("./routes/places");
 const user_routes = require("./routes/users");
 const profile_routes = require("./routes/profiles");
+const message_routes = require("./routes/messages");
 
 mongoose
   .connect(
@@ -39,5 +42,6 @@ app.use((req, res, next) => { //CORS İzinleri
 app.use("/api/users", user_routes);
 app.use("/api/places", place_routes);
 app.use("/api/profiles", profile_routes);
+app.use("/api/messages", message_routes);
 
 module.exports = app;

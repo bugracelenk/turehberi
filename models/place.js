@@ -12,7 +12,6 @@ const place = mongoose.model("Place", new mongoose.Schema({
   plate_code: {
     type: Number,
     required: true,
-    match: /^[1-8]?[0-1]$/
   },
   fav_count: {
     type: Number,
@@ -40,6 +39,11 @@ const place = mongoose.model("Place", new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "Profile"
+  },
+  comments: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "Comment",
+    default:[]
   }
 }));
 

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { plateCodeValidate, isValidID } = require("../utils/validation");
+const { isValidID } = require("../utils/validation");
 const paginate = require("../utils/paginate");
 
 const errMessage400 = (err,res) => {
@@ -20,8 +20,6 @@ exports.create_place = async (req, res, next) => {
   try {
     const args = req.body;
 
-    plateCodeValidate(args.plate_code);
-
     let isCreated = await mongoose
       .model("Place")
       .findOne({ title: args.title });
@@ -33,19 +31,16 @@ exports.create_place = async (req, res, next) => {
           url: `http://${process.env.HOST}:${process.env.PORT}/api/places/${isCreated._id}`
         }
       });
-    } else if (isCreated && isCreated.plate_code === args.plate_code) {
-      return res.status(400).json({
-        message: "Bu plaka kodu ile daha önce bir mekan oluşturulmuş",
-        request: {
-          type: "GET",
-          url: `http://${process.env.HOST}:${process.env.PORT}/api/places/${isCreated._id}`
-        }
-      });
     }
+
+    let _city = await mongoose.model("City").findOne({ plate_code: args.plate_code });
+    if(!_city) return res.status(405).json({
+      error: "Girilen plaka koduna ait şehir bulunamadı"
+    })
 
     const new_place = {
       title: args.title,
-      plate_code: args.plate_code,
+      city: _city._id,
       published_by: req.user_data.profile_id
     };
 
@@ -82,6 +77,7 @@ exports.get_place_by_id = async (req, res, next) => {
       .populate("faved_users", "-_id -gw_list -gender -followers -following -comments -liked -favs -user_id")
       .populate("liked_users", "-_id -gw_list -gender -followers -following -comments -liked -favs -user_id")
       .populate("published_by", "-_id -gw_list -gender -followers -following -comments -liked -favs -user_id")
+      .populate("city", "-places")
       .exec()
       .then(result => {
         if (result) return res.status(200).json(result);
@@ -112,6 +108,7 @@ exports.get_places = (req, res, next) => {
       .populate("liked_users", "-_id -gw_list -gender -followers -following -comments -liked -favs -user_id")
       .populate("faved_users", "-_id -gw_list -gender -followers -following -comments -liked -favs -user_id")
       .populate("published_by", "-_id -gw_list -gender -followers -following -comments -liked -favs -user_id")
+      .populate("city", "-places")
       .limit(paginate.setLimit(args))
       .skip(paginate.setSkip(args))
       .sort({ plate_code: 1 })
