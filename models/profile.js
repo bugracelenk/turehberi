@@ -59,20 +59,23 @@ const profile = mongoose.model(
     },
     liked: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: "Post",
+      ref: "Place",
       default: []
     },
     routes: [{
-      _routes: [{
-        route: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Place",
-        }}
-      ]
+      title: {
+        type: String,
+        required: true
+      },
+      route: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "Place",
+        default: []
+      }
     }],
     favs: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: "Post",
+      ref: "Place",
       default: []
     },
     messages: [{

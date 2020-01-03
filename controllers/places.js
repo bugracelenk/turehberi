@@ -41,7 +41,8 @@ exports.create_place = async (req, res, next) => {
     const new_place = {
       title: args.title,
       city: _city._id,
-      published_by: req.user_data.profile_id
+      published_by: req.user_data.profile_id,
+      images: Array.isArray(req.body.images) ? req.body.images : []
     };
 
     let _new_place = await mongoose.model("Place").create(new_place);
@@ -189,5 +190,187 @@ exports.delete_place = (req, res, next) => {
       });
   } catch (err) {
     errMessage400(err, res);
+  }
+};
+
+exports.fav_place = async (req, res, next) => {
+  let profile = await mongoose.model("Profile").findOne({ _id: req.user_data.profile_id });
+
+  let place = await mongoose.model("Place").findOne({ _id: req.params.place_id });
+
+  if(!place || !profile) return res.status(500).json({
+    error: "Veriler getirilirken bir hata ile karşılaşıldı."
+  });
+
+  place.fav_count += 1;
+  place.faved_users.push(req.user_data.profile_id);
+
+  profile.favs.push(req.params.place_id);
+
+  let _place = await place.save();
+  let _profile = await profile.save();
+
+  if(profile.favs === _profile.favs) return res.status(500).json({
+    error: "Mekan favorilere eklenirken bir hata oluştu."
+  });
+
+  if(place === _place) return res.status(500).json({
+    error: "Mekan favorilere eklenirken bir hata oluştu."
+  });
+
+  return res.status(200).json({
+    message: "Mekan favorilere eklendi."
+  })
+}
+
+exports.unfav_place = async (req, res, next) => {
+  let profile = await mongoose.model("Profile").findOne({ _id: req.user_data.profile_id });
+
+  let place = await mongoose.model("Place").findOne({ _id: req.params.place_id });
+
+  if(!place || !profile) return res.status(500).json({
+    error: "Veriler getirilirken bir hata ile karşılaşıldı."
+  });
+
+  place.fav_count -= 1;
+  place.faved_users.filter(user => { return user !== req.user_data.profile_id});
+
+  profile.favs.filter(fav_place => { return fav_place !== req.params.place_id});
+
+  let _place = await place.save();
+  let _profile = await profile.save();
+
+  if(profile.favs === _profile.favs) return res.status(500).json({
+    error: "Mekan favorilerden çıkartılırken bir hata oluştu."
+  });
+
+  if(place === _place) return res.status(500).json({
+    error: "Mekan favorilerden çıkartılırken bir hata oluştu."
+  });
+
+  return res.status(200).json({
+    message: "Mekan favorilerden çıkartıldı."
+  })
+}
+
+exports.like_place = async (req, res, next) => {
+  let profile = await mongoose.model("Profile").findOne({ _id: req.user_data.profile_id });
+
+  let place = await mongoose.model("Place").findOne({ _id: req.params.place_id });
+
+  if(!place || !profile) return res.status(500).json({
+    error: "Veriler getirilirken bir hata ile karşılaşıldı."
+  });
+
+  place.like_count += 1;
+  place.liked_users.push(req.user_data.profile_id);
+
+  profile.liked.push(req.params.place_id);
+
+  let _place = await place.save();
+  let _profile = await profile.save();
+
+  if(profile.liked === _profile.liked) return res.status(500).json({
+    error: "Mekan beğenilirken bir hata oluştu."
+  });
+
+  if(place === _place) return res.status(500).json({
+    error: "Mekan beğenilirken bir hata oluştu."
+  });
+
+  return res.status(200).json({
+    message: "Mekan beğenilenlere eklendi."
+  })
+}
+
+exports.dislike_place = async (req, res, next) => {
+  let profile = await mongoose.model("Profile").findOne({ _id: req.user_data.profile_id });
+
+  let place = await mongoose.model("Place").findOne({ _id: req.params.place_id });
+
+  if(!place || !profile) return res.status(500).json({
+    error: "Veriler getirilirken bir hata ile karşılaşıldı."
+  });
+
+  place.like_count -= 1;
+  place.liked_users.filter(user => { return user !== req.user_data.profile_id});
+
+  profile.liked.filter(liked_place => { return liked_place !== req.params.place_id});
+
+  let _place = await place.save();
+  let _profile = await profile.save();
+
+  if(profile.favs === _profile.favs) return res.status(500).json({
+    error: "Mekan beğenilenlerden çıkartılırken bir hata oluştu."
+  });
+
+  if(place === _place) return res.status(500).json({
+    error: "Mekan beğenilenlerden çıkartılırken bir hata oluştu."
+  });
+
+  return res.status(200).json({
+    message: "Mekan beğenilenlerden çıkartıldı."
+  })
+}
+
+exports.add_wg_list = async (req, res, next) => {
+  try {
+    let profile = await mongoose
+      .model("Profile")
+      .findOne({ _id: req.user_data.profile_id });
+    if (!profile)
+      return res.status(404).json({
+        error: "Kullanıcı bulunamadı"
+      });
+
+    await validation.isValidID(req.params.place_id, "place_id");
+
+    profile.gw_list.will_go_list.push(req.params.place_id);
+    let _profile = await profile.save();
+
+    if (profile === _profile)
+      return res.status(500).json({
+        error: "Mekan gidilecekler listesine eklenirken bir hata ile karşılaşıldı."
+      });
+    
+    return res.status(200).json({
+      message: "Mekan gidilecekler listesine eklendi"
+    })
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).json({
+      error: err.message
+    })
+  }
+};
+
+exports.add_gone_list = async (req, res, next) => {
+  try {
+    let profile = await mongoose
+      .model("Profile")
+      .findOne({ _id: req.user_data.profile_id });
+    if (!profile)
+      return res.status(404).json({
+        error: "Kullanıcı bulunamadı"
+      });
+
+    await validation.isValidID(req.params.place_id, "place_id");
+
+    profile.gw_list.gone_list.push(req.params.place_id);
+    let _profile = await profile.save();
+
+    if (profile === _profile)
+      return res.status(500).json({
+        error: "Mekan gidilenler listesine eklenirken bir hata ile karşılaşıldı."
+      });
+    
+    return res.status(200).json({
+      message: "Mekan gidilenler listesine eklendi"
+    })
+  } catch (err) {
+    console.log(err.message);
+    return res.status(500).json({
+      error: err.message
+    })
   }
 };

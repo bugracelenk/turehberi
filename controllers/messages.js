@@ -196,7 +196,7 @@ exports.delete_chat = async (req, res, next) => {
 
   if(messages.length > 0 ) {
     messages.map(message => {
-      mongoose.model("Message").deleteOne({ _id: message._id })
+      mongoose.model("Message").deleteOne({ _id: message })
     })
   }
 

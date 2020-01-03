@@ -121,3 +121,46 @@ exports.register = async (req, res, next) => {
     return res.status(500).json({ err });
   })
 }
+
+exports.change_email = async (req, res, next) => {
+  let user = await mongoose.model("User").findOne({ _id: req.user_data._id });
+
+  if(!user) return res.status(404).json({
+    error: "Kullanıcı bulunamadı"
+  })
+
+  user.email = req.body.email;
+
+  let _user = await user.save();
+
+  if(user === _user) return res.status(500).json({
+    error: "E-mail adresi değiştirilirken bir hata ile karşılaşıldı."
+  });
+
+  return res.status(200).json({
+    message: "E-mail adresi değiştirildi."
+  })
+}
+
+exports.change_password = async (req, res, next) => {
+  let user = await mongoose.model("User").findOne({ _id: req.user_data._id });
+
+  if(!user) return res.status(404).json({
+    error: "Kullanıcı bulunamadı"
+  })
+
+  bcrypt.hash(req.body.password, 10, (err, hash) => {
+    if(err) return res.status(500).json({ err });
+    else {
+      user.password = hash;
+      user.save();
+
+      return res.status(200).json({
+        message: "Şifre değiştirildi."
+      })
+    }
+  }).catch(err => {
+    console.log(err);
+    return res.status(500).json({ err });
+  })
+}

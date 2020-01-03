@@ -13,6 +13,10 @@ const place = mongoose.model("Place", new mongoose.Schema({
     type: Number,
     required: true,
   },
+  images: {
+    type: [String],
+    default: []
+  },
   fav_count: {
     type: Number,
     default: 0
