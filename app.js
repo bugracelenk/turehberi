@@ -16,7 +16,7 @@ const message_routes = require("./routes/messages");
 
 mongoose
   .connect(
-    "mongodb://localhost/turehberi",
+    "mongodb+srv://hllkrtl:1234qwerasdf@cluster0-8smqx.mongodb.net/test?retryWrites=true&w=majority",
     { useNewUrlParser: true }
   )//bağlantı yapıyo
   .then(() => console.log("Connected to MongoDB"))//bağlandığını bildiriyo
