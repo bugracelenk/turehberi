@@ -13,6 +13,7 @@ const place_routes = require("./routes/places");
 const user_routes = require("./routes/users");
 const profile_routes = require("./routes/profiles");
 const message_routes = require("./routes/messages");
+const city_routes = require("./routes/city");
 
 mongoose
   .connect(
@@ -43,5 +44,6 @@ app.use("/api/users", user_routes);
 app.use("/api/places", place_routes);
 app.use("/api/profiles", profile_routes);
 app.use("/api/messages", message_routes);
+app.use("/api/city", city_routes);
 
 module.exports = app;
