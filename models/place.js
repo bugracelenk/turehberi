@@ -9,10 +9,6 @@ const place = mongoose.model("Place", new mongoose.Schema({
     type: Number,
     default: 0
   },
-  plate_code: {
-    type: Number,
-    required: true,
-  },
   images: {
     type: [String],
     default: []
@@ -48,7 +44,10 @@ const place = mongoose.model("Place", new mongoose.Schema({
     type: [mongoose.Schema.Types.ObjectId],
     ref: "Comment",
     default:[]
-  }
+  },
+  city: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "City"
 }));
 
 module.exports = place;
