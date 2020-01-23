@@ -13,7 +13,7 @@ const place_routes = require("./routes/places");
 const user_routes = require("./routes/users");
 const profile_routes = require("./routes/profiles");
 const message_routes = require("./routes/messages");
-const city_routes = require("./routes/city");
+const city_routes = require("./routes/cities");
 
 mongoose
   .connect(
